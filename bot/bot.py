@@ -1,9 +1,7 @@
-import logging
 import json
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart, Command
 
-from handlers import router
+from frontend.start.start_handlers import router
 
 
 # API_TOKEN = '7713099196:AAE4_6_w0Z6WZ401bWH40xjLWIBkZAEGaIs'

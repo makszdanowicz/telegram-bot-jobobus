@@ -1,5 +1,6 @@
 import asyncio
-from bot import dp, bot  # Importujemy dispatcher  i bot z pliku `bot.py`
+import logging
+from bot.bot import dp, bot  # Importujemy dispatcher  i bot z pliku `bot.py`
 
 
 async def main():
@@ -8,6 +9,7 @@ async def main():
 
 # Uruchomienie bota
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO) # getting logs to console about all interactions with bot
     try:
         print('Bot is running')
         asyncio.run(main())
