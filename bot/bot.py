@@ -1,11 +1,11 @@
 import json
+import logging
 from aiogram import Bot, Dispatcher
 
 from frontend.start.start_handlers import router
 
 
-# API_TOKEN = '7713099196:AAE4_6_w0Z6WZ401bWH40xjLWIBkZAEGaIs'
-# function that read api token from config json file
+# function that load and read api token from config json file
 def load_api_token(config_path='bot/bot_config.json'):
     try:
         with open(config_path, 'r') as f:
@@ -21,6 +21,6 @@ API_TOKEN = load_api_token()
 # Bot initialization
 bot = Bot(token=API_TOKEN)
 
-# Dispatcher initialization
+# Initialize the dispatcher to handle bot updates and routing
 dp = Dispatcher()
-dp.include_router(router)
+dp.include_router(router)   # register the router with the dispatcher (handlers for different commands and messages)

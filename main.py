@@ -1,17 +1,19 @@
 import asyncio
 import logging
-from bot.bot import dp, bot  # Importujemy dispatcher  i bot z pliku `bot.py`
+from bot.bot import dp, bot
 
 
 async def main():
-    # Rozpoczynamy polling, czyli nasłuchiwanie nowych wiadomości
+    # Start polling - it means start listening for incoming messages and updated
     await dp.start_polling(bot)
 
-# Uruchomienie bota
+
+# Bot execution entry point
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO) # getting logs to console about all interactions with bot
+    logging.basicConfig(level=logging.INFO)  # Configure logging to display info-level logs in the console
     try:
         print('Bot is running')
-        asyncio.run(main())
+        asyncio.run(main())  # Start the bot using asyncio
     except KeyboardInterrupt:
+        # Handle shutdown of bot
         print('Bot is switch off')
