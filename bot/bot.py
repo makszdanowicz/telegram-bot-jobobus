@@ -2,7 +2,7 @@ import json
 import logging
 from aiogram import Bot, Dispatcher
 
-from ..frontend.start.start_handlers import router
+from frontend.start.start_handlers import router
 
 
 # function that load and read api token from config json file
