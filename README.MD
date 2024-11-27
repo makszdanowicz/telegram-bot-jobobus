@@ -9,8 +9,10 @@
 
 2. **Create config file and add API token:**
 
-echo '{"API_TOKEN": "your-telegram-bot-token"}' > bot/bot_config.json
-
+    ```sh
+    echo '{"API_TOKEN": "your-telegram-bot-token"}' > bot/bot_config.json
+    ```
+    
 3. **Set up and activate environment:**
     Create a `.venv` file in the root directory and add your Telegram bot token:
 
