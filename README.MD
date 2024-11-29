@@ -1,4 +1,4 @@
-![JobOBus Logo](logo.png)
+![JobOBus Logo](logo.jpg)
 
 ## How to Run
 
