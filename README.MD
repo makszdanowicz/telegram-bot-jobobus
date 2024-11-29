@@ -1,3 +1,5 @@
+![JobOBus Logo](https://github.com/makszdanowicz/telegram-bot-jobobus/raw/main/logo.png)
+
 ## How to Run
 
 1. **Clone the repository:**
