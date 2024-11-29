@@ -1,4 +1,4 @@
-![JobOBus Logo](https://github.com/makszdanowicz/telegram-bot-jobobus/logo.png)
+![JobOBus Logo](logo.png)
 
 ## How to Run
 
