@@ -2,14 +2,14 @@ import json
 import logging
 from aiogram import Bot, Dispatcher
 
-from frontend.start.start_handlers import router
-
+from bot.handlers.start.start_handlers import router
 
 # function that load and read api token from config json file
-def load_api_token(config_path='bot/bot_config.json'):
+def load_api_token(config_path=r'bot/config/bot_config.json'):
     try:
         with open(config_path, 'r') as f:
             config = json.load(f)
+            print(config.get('API_TOKEN'))
         return config.get('API_TOKEN')  # Returning only token
     except Exception as e:
         logging.error(f"Failed to load config file {config_path}: {e}")

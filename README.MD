@@ -1,3 +1,5 @@
+![JobOBus Logo](logo.jpg)
+
 ## How to Run
 
 1. **Clone the repository:**
@@ -12,8 +14,9 @@
     ```sh
     echo '{"API_TOKEN": "your-telegram-bot-token"}' > bot/bot_config.json
     ```
-    
-3. **Set up and activate environment:**
+
+3. **Set up and activate environment:** 
+
     Create a `.venv` file in the root directory and add your Telegram bot token:
 
     ```sh
