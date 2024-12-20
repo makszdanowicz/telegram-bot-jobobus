@@ -20,11 +20,15 @@ application_menu_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='Create application'),
+            KeyboardButton(text='View application'),
+        ],
+        [
             KeyboardButton(text='Edit application'),
             KeyboardButton(text='Delete application')
         ],
         [
-            KeyboardButton(text='Start searching')
+            KeyboardButton(text='Start searching'),
+            KeyboardButton(text='Back to profile menu')
         ]
     ]
 )

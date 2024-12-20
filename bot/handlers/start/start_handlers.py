@@ -81,7 +81,7 @@ async def read_role(callback: CallbackQuery, state: FSMContext):
         # getData from UserStateReg and add new Record to users db
         # setState for Employer Company name
         await create_user_profile(state)
-        await state.set_state(EmployeeRegistrationState.email)
+        await state.set_state(EmployeeRegistrationState.email)  # change to company name state
         await callback.message.answer("Enter the name of your company/organization")
 
     await callback.answer()
