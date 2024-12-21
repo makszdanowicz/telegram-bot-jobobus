@@ -32,3 +32,32 @@ application_menu_keyboard = ReplyKeyboardMarkup(
         ]
     ]
 )
+
+work_mode_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='stationary', callback_data='stationary_button'),
+            InlineKeyboardButton(text='remote', callback_data='remote_button')
+        ],
+        [
+            InlineKeyboardButton(text='hybrid', callback_data='hybrid_button'),
+            InlineKeyboardButton(text='any', callback_data='any_mode_button')
+        ]
+    ]
+)
+
+experience_level_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Intern', callback_data='intern_button'),
+            InlineKeyboardButton(text='Junior', callback_data='junior_button')
+        ],
+        [
+            InlineKeyboardButton(text='Mid', callback_data='mid_button'),
+            InlineKeyboardButton(text='Senior', callback_data='senior_button'),
+        ],
+        [
+            InlineKeyboardButton(text='Expert', callback_data='expert_button')
+        ]
+    ]
+)

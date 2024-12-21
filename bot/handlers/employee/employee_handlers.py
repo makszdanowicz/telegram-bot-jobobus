@@ -81,14 +81,14 @@ async def read_country(message: Message, state: FSMContext):
 async def read_city(message: Message, state: FSMContext):
     await state.update_data(city=message.text)
     await state.set_state(ApplicationRegistrationState.work_mode)
-    await message.answer("What is your preferred work mode?")
+    await message.answer("What is your preferred work mode?", reply_markup=kb.work_mode_keyboard)
 
 
 @employee_router.message(ApplicationRegistrationState.work_mode)
 async def read_work_mode(message: Message, state: FSMContext):
     await state.update_data(work_mode=message.text)
     await state.set_state(ApplicationRegistrationState.experience_level)
-    await message.answer("Please specify your level of experience")
+    await message.answer("Please specify your level of experience", reply_markup=kb.experience_level_keyboard)
 
 
 @employee_router.message(ApplicationRegistrationState.experience_level)
