@@ -84,21 +84,41 @@ async def read_city(message: Message, state: FSMContext):
     await message.answer("What is your preferred work mode?", reply_markup=kb.work_mode_keyboard)
 
 
-@employee_router.message(ApplicationRegistrationState.work_mode)
-async def read_work_mode(message: Message, state: FSMContext):
-    await state.update_data(work_mode=message.text)
+@employee_router.callback_query(ApplicationRegistrationState.work_mode)
+async def read_work_mode(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'stationary_button':
+        await state.update_data(work_mode='stationary')
+    elif callback.data == 'remote_button':
+        await state.update_data(work_mode='remote')
+    elif callback.data == 'hybrid_button':
+        await state.update_data(work_mode='hybrid')
+    elif callback.data == 'any_mode_button':
+        await state.update_data(work_mode='any')
+    await callback.message.edit_reply_markup()  # remove the inline keyboard
     await state.set_state(ApplicationRegistrationState.experience_level)
-    await message.answer("Please specify your level of experience", reply_markup=kb.experience_level_keyboard)
+    await callback.message.answer("Please specify your level of experience", reply_markup=kb.experience_level_keyboard)
+    await callback.answer()
 
 
-@employee_router.message(ApplicationRegistrationState.experience_level)
-async def read_experience_level(message: Message, state: FSMContext):
-    await state.update_data(experience_level=message.text)
+@employee_router.callback_query(ApplicationRegistrationState.experience_level)
+async def read_experience_level(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'intern_button':
+        await state.update_data(experience_level='Intern')
+    elif callback.data == 'junior_button':
+        await state.update_data(experience_level='Junior')
+    elif callback.data == 'mid_button':
+        await state.update_data(experience_level='Mid')
+    elif callback.data == 'senior_button':
+        await state.update_data(experience_level='Senior')
+    elif callback.data == 'expert_button':
+        await state.update_data(experience_level='Expert')
+    await callback.message.edit_reply_markup()  # remove the inline keyboard
     await state.set_state(ApplicationRegistrationState.specialization)
-    await message.answer("Please select your specialization from the list below and type it in:\n- AI/ML\n- Sys. "
+    await callback.message.answer("Please select your specialization from the list below and type it in:\n- AI/ML\n- Sys. "
                          "Administrator\n- Business Analysis\n- Architecture\n- Backend\n- Data\n- Design\n- "
                          "DevOps\n- ERP\n- Embedded\n- Frontend\n- Fullstack\n- GameDev\n- Mobile\n- PM\n- "
                          "Security\n- Support\n- Testing\n- Other")
+    await callback.answer()
 
 
 @employee_router.message(ApplicationRegistrationState.specialization)
