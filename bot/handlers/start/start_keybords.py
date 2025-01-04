@@ -1,14 +1,41 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-main_keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Employee'),
-                                               KeyboardButton(text='Employer')],
-                                              [KeyboardButton(text='How bot works and FAQ')]],
-                                    resize_keyboard=True,
-                                    input_field_placeholder='Choose your role...')
+
+async def main_kb():
+    main_kb_builder = ReplyKeyboardBuilder()
+    main_kb_builder.add(KeyboardButton(text='Employee'))
+    main_kb_builder.add(KeyboardButton(text='Employer'))
+    return main_kb_builder.as_markup(resize_keyboard=True,
+                                     input_field_placeholder='Choose your role...',
+                                     one_time_keyboard=True)
+
+
+main_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='Employee'),
+            KeyboardButton(text='Employer')
+        ],
+        [
+            KeyboardButton(text='How bot works and FAQ')
+         ]
+    ],
+    resize_keyboard=True,
+    input_field_placeholder='Choose your role...'
+)
 
 # Inline keyboard for creating a profile
-profile = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Create profile',
-                                                                      callback_data="create_profile_button")]])
+profile = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Create profile',
+                callback_data="create_profile_button"
+            )
+        ]
+    ]
+)
 
 # Inline keyboard for selecting the user's role (Employee or Employer)
 role_chooser = InlineKeyboardMarkup(
@@ -18,9 +45,18 @@ role_chooser = InlineKeyboardMarkup(
     ]
 )
 
+
 # Reply keyboard for profile management options (View, Edit, Delete profile)
-profile_keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='View profile'),
-                                                  KeyboardButton(text='Edit profile')],
-                                                 [KeyboardButton(text='Delete profile')]],
-                                       resize_keyboard=True,
-                                       input_field_placeholder='Manage your profile...')
+profile_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='View user profile'),
+            KeyboardButton(text='Edit user profile')
+        ],
+        [
+            KeyboardButton(text='Delete user profile')
+        ]
+    ],
+    resize_keyboard=True,
+    input_field_placeholder='Manage your profile...'
+)
