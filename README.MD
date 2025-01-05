@@ -9,10 +9,11 @@
     cd telegram-bot-jobobus
     ```
 
-2. **Create config file and add API token:**
+2. **Add API token to .env file:**
 
+    Enter the API token to '.env.template' file and copy it into '.env'
     ```sh
-    echo '{"API_TOKEN": "your-telegram-bot-token"}' > bot/bot_config.json
+    cp .env.template .env
     ```
 
 3. **Set up and activate environment:** 
