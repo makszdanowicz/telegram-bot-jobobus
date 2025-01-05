@@ -126,7 +126,7 @@ cython_debug/
 
 /.idea
 .idea
-/bot/bot_config.json
+/bot/config/bot_config.json
 /backend/database/db_config.json
 
 *.json
