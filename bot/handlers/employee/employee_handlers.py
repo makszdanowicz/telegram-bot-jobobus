@@ -50,7 +50,7 @@ async def cmd_edit_profile(message: Message):
     await message.answer("In future it will make update query to db")
 
 
-@employee_router.message(F.text == 'Delete employee profile')
+@employee_router.message(F.text == '🗑️')
 async def cmd_delete_profile(message: Message):
     await message.answer("In future it will delete profile from db")
 
