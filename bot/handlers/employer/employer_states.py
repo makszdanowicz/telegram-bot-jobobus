@@ -5,6 +5,10 @@ class EmployerRegistrationState(StatesGroup):
     email = State()
     company = State()
 
+class ViewEmployerOffers(StatesGroup):
+    display_offers = State()
+    choose_offer = State()
+
 class AddJobOfferState(StatesGroup):
     country = State()
     city = State()
