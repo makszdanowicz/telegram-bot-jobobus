@@ -36,21 +36,19 @@ async def cmd_help(message: Message):
     await message.answer("Enter /start to run bot")
 
 
-
-# TODO fix double ask for "create profile" 
-
 # Handler for when the user clicks the "Create profile" button
 @start_router.callback_query(F.data == "create_profile_button")
-async def create_profile(callback: CallbackQuery):
+async def create_profile(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()  # after clicking remove the inline keyboard
-    await callback.message.answer('To create a profile please, enter command /create_profile')
-
-
-# Handler for /register command, initiates the registration process and sets the first state
-@start_router.message(Command('create_profile'))
-async def registrate(message: Message, state: FSMContext):
     await state.set_state(UserRegistrationState.name)  # set the state to collect the user's name
-    await message.answer("Type your name: ")
+    await callback.message.answer("Type your name: ")
+
+
+# # Handler for /register command, initiates the registration process and sets the first state
+# @start_router.message(Command('create_profile'))
+# async def registrate(message: Message, state: FSMContext):
+#     await state.set_state(UserRegistrationState.name)  # set the state to collect the user's name
+#     await message.answer("Type your name: ")
 
 
 # Handler for collecting the user's name, we are handle not command, but state!!

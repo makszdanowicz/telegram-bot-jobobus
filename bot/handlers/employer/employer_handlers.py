@@ -8,24 +8,28 @@ from . import employer_keyboards as kb
 from .employer_states import EmployerRegistrationState, AddJobOfferState, ViewEmployerOffers
 
 employer_router = Router()
+specializations = []
 
 ### Registration Handlers
 
 @employer_router.message(EmployerRegistrationState.email)
 async def read_email(message: Message, state: FSMContext):
     email = message.text
-    if '@' not in email or '.' not in email:
+    if '@' not in email or '.' not in email or len(email) > 254:
         await message.answer("Invalid email format. Please try again.")
         return
 
     await state.update_data(email=email)
-    await message.answer(f"Your email: {email}")
+    # await message.answer(f"Your email: {email}")
     await state.set_state(EmployerRegistrationState.company)
     await message.answer("Enter your company name:")
 
 @employer_router.message(EmployerRegistrationState.company)
 async def read_company_name(message: Message, state: FSMContext):
     company = message.text
+    if len(company) < 2 or not company.isalnum() and len(company) > 30:
+        await message.answer("Company name is too short or too long. Please try again")
+        return
     await state.update_data(company=company)
 
     data = await state.get_data()
@@ -54,19 +58,25 @@ async def cmd_offers_menu(message: Message):
 
 @employer_router.message(F.text == 'Create job offer')
 async def start_create_offer(message: Message, state: FSMContext):
-    await message.answer("Enter the country for the job offer:")
+    await message.answer("Enter the country for the job offer (for example Poland):")
     await state.set_state(AddJobOfferState.country)
 
 @employer_router.message(AddJobOfferState.country)
 async def add_country(message: Message, state: FSMContext):
     country = message.text
+    if len(country) < 2 or not country.isalnum() and len(country) > 60: # 56 is max for The United Kingdom of Great Britain and Northern Ireland 
+        await message.answer("Invalid country name. Please enter a valid country.")
+        return
     await state.update_data(country=country)
-    await message.answer("Enter the city for the job offer:")
+    await message.answer("Enter the city for the job offer (for example Wroclaw)")
     await state.set_state(AddJobOfferState.city)
 
 @employer_router.message(AddJobOfferState.city)
 async def add_city(message: Message, state: FSMContext):
     city = message.text
+    if len(city) < 2 or not city.isalnum() and len(city) > 50: #  Most city names are under 50 characters.
+        await message.answer("Invalid city name. Please enter a valid city.")
+        return
     await state.update_data(city=city)
     await message.answer("Select the work mode:", reply_markup=kb.work_mode_keyboard)
     await state.set_state(AddJobOfferState.work_mode)
@@ -74,8 +84,10 @@ async def add_city(message: Message, state: FSMContext):
 @employer_router.callback_query(AddJobOfferState.work_mode)
 async def add_work_mode(callback: CallbackQuery, state: FSMContext):
     work_mode = callback.data.split('_')[0]
+    await callback.message.edit_reply_markup()
     await state.update_data(work_mode=work_mode)
-    await callback.message.answer("Select the experience level:", reply_markup=kb.experience_level_keyboard)
+    await callback.message.answer(f"Selected mode: {work_mode}")
+    await callback.message.answer("Select your candidate experience level:", reply_markup=kb.experience_level_keyboard)
     await state.set_state(AddJobOfferState.experience_level)
 
 @employer_router.callback_query(AddJobOfferState.experience_level)
@@ -92,18 +104,25 @@ async def add_experience_level(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'expert_button':
         await state.update_data(experience_level='Expert')
     await callback.message.edit_reply_markup()  # remove the inline keyboard
+    await callback.message.answer(f"Selected level: {experience_level}")
     await state.set_state(AddJobOfferState.specialization)
-    await callback.message.answer("Please select your specialization from the list below and type it in:\n- AI/ML\n- Sys. "
-                         "Administrator\n- Business Analysis\n- Architecture\n- Backend\n- Data\n- Design\n- "
-                         "DevOps\n- ERP\n- Embedded\n- Frontend\n- Fullstack\n- GameDev\n- Mobile\n- PM\n- "
-                         "Security\n- Support\n- Testing\n- Other")
     await state.update_data(experience_level=experience_level)
-    await callback.message.answer("Enter the specialization for the job offer:")
+    global specializations
+    specializations = [
+        "AI/ML", "Sys. Administrator", "Business Analysis", "Architecture", "Backend", "Data", "Design",
+        "DevOps", "ERP", "Embedded", "Frontend", "Fullstack", "GameDev", "Mobile", "PM", "Security",
+        "Support", "Testing", "Other"
+    ]
+    specialization_list = "\n- ".join(specializations)
+    await callback.message.answer(f"Please select your specialization from the list below and type it in:\n- {specialization_list}")
 
 
 @employer_router.message(AddJobOfferState.specialization)
 async def add_specialization(message: Message, state: FSMContext):
     specialization = message.text
+    if specialization not in specializations:
+        await message.answer("Enter specialization from the list or type \"Other\"")
+        return
     await state.update_data(specialization=specialization)
     await message.answer("Enter the job description in range 100 - 1000 symbols")
     await state.set_state(AddJobOfferState.description)
@@ -112,7 +131,8 @@ async def add_specialization(message: Message, state: FSMContext):
 async def finalize_job_offer(message: Message, state: FSMContext):
     description = message.text
     # Verify the length of the description
-    if len(description) < 100 or len(description) > 1000:
+    min_len = 10 #change to 100 for production
+    if len(description) < min_len or len(description) > 1000:
         await message.answer(
             "The job description must be between 100 and 1000 characters. Please try again."
         )

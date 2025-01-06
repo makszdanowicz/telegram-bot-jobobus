@@ -6,8 +6,8 @@ employer_menu_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='View employer profile'),
-            KeyboardButton(text='Edit employer profile'),
-            KeyboardButton(text='🗑️') #Delete employer profile
+            # KeyboardButton(text='Edit employer profile'),
+            # KeyboardButton(text='🗑️') #Delete employer profile
         ],
         [
             KeyboardButton(text='Offers menu')
