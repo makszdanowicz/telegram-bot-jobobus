@@ -8,6 +8,7 @@ from bot.utils.dictionary import *
 
 from . import start_keybords as kb
 from bot.handlers.employee import EmployeeRegistrationState
+from bot.handlers.employer import EmployerRegistrationState
 # from bot.handlers.employee.employee_states import EmployeeRegistrationState
 
 start_router = Router()  # a router for handling commands and messages at beginning of using the bot
@@ -32,8 +33,11 @@ async def cmd_start(message: Message):
 # Handler for /help command, sends a help message
 @start_router.message(Command('help'))
 async def cmd_help(message: Message):
-    await message.answer("You typed a help button")
+    await message.answer("Enter /start to run bot")
 
+
+
+# TODO fix double ask for "create profile" 
 
 # Handler for when the user clicks the "Create profile" button
 @start_router.callback_query(F.data == "create_profile_button")
@@ -77,14 +81,12 @@ async def read_role(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Enter your email, for your contact bio, for example: example@example.com")
     elif callback.data == 'employer_button':
         await state.update_data(role='Employer')
-        # TO DO:
-        # getData from UserStateReg and add new Record to users db
-        # setState for Employer Company name
-        await create_user_profile(state)
-        await state.set_state(EmployeeRegistrationState.email)  # change to company name state
-        await callback.message.answer("Enter the name of your company/organization")
+        await create_user_profile(state) # getData from UserStateReg and add new Record to users db'
+        await state.set_state(EmployerRegistrationState.email)  # change to company name state
+        await callback.message.answer("Enter your email, for your contact bio, for example: example@example.com")
 
-    await callback.answer()
+
+    # await callback.message()
     await callback.message.edit_reply_markup()  # remove the inline keyboard
 
 

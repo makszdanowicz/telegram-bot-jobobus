@@ -1,10 +1,10 @@
-from aiogram import types, F, Router
+from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
-from . import employee_keybords as kb
+from . import employee_keyboards as kb
 from .employee_states import EmployeeRegistrationState, ApplicationRegistrationState
 
 # from bot.handlers.employee.employee_states import EmployeeRegistrationState
