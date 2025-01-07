@@ -33,7 +33,7 @@
 5. **Run the bot:**
 
     ```sh
-    python bot.py
+    python main.py
     ```
 
 6. **Interact with your bot on Telegram.**
