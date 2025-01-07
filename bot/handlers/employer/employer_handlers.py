@@ -58,7 +58,7 @@ async def cmd_offers_menu(message: Message):
 
 @employer_router.message(F.text == 'Create job offer')
 async def start_create_offer(message: Message, state: FSMContext):
-    await message.answer("Enter the country for the job offer (for example Poland):")
+    await message.answer("Enter the country for the job offer (for example Poland):", reply_markup=ReplyKeyboardRemove())
     await state.set_state(AddJobOfferState.country)
 
 @employer_router.message(AddJobOfferState.country)
@@ -179,3 +179,20 @@ async def cmd_edit_offer(message: Message):
 @employer_router.message(F.text == 'Delete job offer')
 async def cmd_delete_offer(message: Message):
     await message.answer("Feature to delete job offers coming soon!")
+
+@employer_router.message(F.text == 'Delete job offer')
+async def cmd_delete_offer(message: Message):
+    await message.answer("Feature to delete job offers coming soon!")
+
+@employer_router.message(F.text == 'View specific offer')
+async def specific_offer(message: Message):
+    await message.answer("Feature to display specific offers coming soon!")
+
+@employer_router.message(F.text == 'View list of all offers')
+async def offer_list(message: Message):
+    await message.answer("Feature to display the lis of job offers coming soon!")
+    for i in range (1, 11):
+        await message.answer(f"Sample job offer number {i}")
+@employer_router.message(F.text == 'Profile menu')
+async def cmd_profile_menu(message: Message):
+    await message.answer("You have returned to the profile menu.", reply_markup=kb.employer_menu_keyboard)
