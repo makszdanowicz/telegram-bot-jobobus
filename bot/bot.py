@@ -9,6 +9,7 @@ from bot.handlers.start.start_handlers import start_router
 from bot.handlers.employee.employee_handlers import employee_router
 from bot.handlers.employer.employer_handlers import employer_router
 
+# Reading API token for bot from .env config file
 load_dotenv()
 API_TOKEN = os.getenv("API_TOKEN")
 

@@ -6,13 +6,13 @@ employee_menu_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='View employee profile'),
             KeyboardButton(text='Edit employee profile'),
-            KeyboardButton(text='🗑️') #Delete employee profile
         ],
         [
+            KeyboardButton(text='🗑️'),  # Delete employee profile
             KeyboardButton(text='Application menu')
         ]
     ],
-    resize_keyboard=True,
+    # resize_keyboard=True,
     input_field_placeholder='Manage your profile...'
 )
 

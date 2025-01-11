@@ -7,16 +7,15 @@ from aiogram.fsm.context import FSMContext
 from . import employee_keyboards as kb
 from .employee_states import EmployeeRegistrationState, ApplicationRegistrationState
 
-# from bot.handlers.employee.employee_states import EmployeeRegistrationState
-
 employee_router = Router()  # a router for handling commands and messages from employee users
+specializations = []  # specializations for application
 
 
 # Handler for collecting employee's email
 @employee_router.message(EmployeeRegistrationState.email)
 async def read_email(message: Message, state: FSMContext):
     email = message.text
-    if '@' not in email or '.' not in email:  # Validation for correct email format
+    if '@' not in email or '.' not in email or len(email) > 254:  # Validation for correct email format
         await message.answer("Invalid email format. Please try again.")
         return
 
@@ -67,14 +66,14 @@ async def cmd_create_application(message: Message, state: FSMContext):
                                   "Let’s get started!")
     await message.answer(text=create_application_message, reply_markup=ReplyKeyboardRemove())
     await state.set_state(ApplicationRegistrationState.country)
-    await message.answer("Please enter the name of the country where you are looking for a job(for example Poland).")
+    await message.answer("Please enter the name of the country where you are looking for a job (for example Poland).")
 
 
 @employee_router.message(ApplicationRegistrationState.country)
 async def read_country(message: Message, state: FSMContext):
     await state.update_data(country=message.text)
     await state.set_state(ApplicationRegistrationState.city)
-    await message.answer("Please enter the name of the city where you are searching for a job(for example Warsaw).")
+    await message.answer("Please enter the name of the city where you are searching for a job (for example Warsaw).")
 
 
 @employee_router.message(ApplicationRegistrationState.city)
@@ -114,10 +113,15 @@ async def read_experience_level(callback: CallbackQuery, state: FSMContext):
         await state.update_data(experience_level='Expert')
     await callback.message.edit_reply_markup()  # remove the inline keyboard
     await state.set_state(ApplicationRegistrationState.specialization)
-    await callback.message.answer("Please select your specialization from the list below and type it in:\n- AI/ML\n- Sys. "
-                         "Administrator\n- Business Analysis\n- Architecture\n- Backend\n- Data\n- Design\n- "
-                         "DevOps\n- ERP\n- Embedded\n- Frontend\n- Fullstack\n- GameDev\n- Mobile\n- PM\n- "
-                         "Security\n- Support\n- Testing\n- Other")
+    global specializations
+    specializations = [
+        "AI/ML", "Sys. Administrator", "Business Analysis", "Architecture", "Backend", "Data", "Design",
+        "DevOps", "ERP", "Embedded", "Frontend", "Fullstack", "GameDev", "Mobile", "PM", "Security",
+        "Support", "Testing", "Other"
+    ]
+    specialization_list = "\n- ".join(specializations)
+    await callback.message.answer(
+        f"Please select your specialization from the list below and type it in:\n- {specialization_list}")
     await callback.answer()
 
 
@@ -136,6 +140,11 @@ async def read_description(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("You have been successfully created your application!",
                          reply_markup=kb.application_menu_keyboard)
+
+
+@employee_router.message(F.text == 'View application')
+async def cmd_view_application(message: Message):
+    await message.answer(text="You have clicked view application")
 
 
 @employee_router.message(F.text == 'Edit application')
