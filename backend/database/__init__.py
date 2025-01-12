@@ -1,4 +1,4 @@
-from .db import create_pool, get_connection, close_connection
+from .db import create_pool, get_pool, get_connection, close_connection
 from .user_queries import (
     insert_user,
     update_user_role,

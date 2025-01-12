@@ -55,12 +55,6 @@ async def cmd_create_profile(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer("Type your name: ")
 
 
-# # Handler for /register command, initiates the registration process and sets the first state
-# @start_router.message(Command('create_profile'))
-# async def registrate(message: Message, state: FSMContext):
-#     await state.set_state(UserRegistrationState.name)  # set the state to collect the user's name
-#     await message.answer("Type your name: ")
-
 
 # Handler for collecting the user's name, we are handle not command, but state!!
 @start_router.message(UserRegistrationState.name)
@@ -125,12 +119,6 @@ async def cmd_view_profile(message: Message):
         f"Surname: {user_data['last_name']}\n"
         f"Role: {user_data['role']}"
     )
-    # await message.answer(
-    #     f"Your profile bio:\n"
-    #     f"Name: {data['name']}\n"
-    #     f"Surname: {data['surname']}\n"
-    #     f"Role: {data['role']}"
-    # )
 
 
 # Handler for editing the user's profile (this will be implemented later)
@@ -153,7 +141,7 @@ async def read_new_first_name(message: Message, state: FSMContext):
     updated_data = await state.get_data()
     await state.clear()
     updated_first_name = updated_data.get("updated_first_name")
-    await update_user_first_name(user_id,updated_first_name)
+    await update_user_first_name(user_id, updated_first_name)
 
 
 @start_router.callback_query(F.data == "last_name_button")

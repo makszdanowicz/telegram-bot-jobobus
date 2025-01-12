@@ -61,3 +61,15 @@ experience_level_keyboard = InlineKeyboardMarkup(
         ]
     ]
 )
+
+parameters_to_update_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='first name', callback_data='first_name_to_update_button'),
+            InlineKeyboardButton(text='last name', callback_data='last_name_to_update_button')
+        ],
+        [
+            InlineKeyboardButton(text='email', callback_data='email_to_update_button')
+        ]
+    ]
+)
