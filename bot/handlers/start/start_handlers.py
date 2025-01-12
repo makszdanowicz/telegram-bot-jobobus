@@ -35,7 +35,6 @@ class UpdateUserDataState(StatesGroup):
 @start_router.message(CommandStart())
 async def cmd_start(message: Message):
     await message.answer(start_text, reply_markup=kb.profile)
-    # await message.answer("Hello, I'm JobOBus bot!", reply_markup=kb.profile)
 
 
 # Handler for /help command, sends a help message
@@ -53,7 +52,6 @@ async def cmd_create_profile(callback: CallbackQuery, state: FSMContext):
     await state.update_data(user_id=user_id)
     await state.set_state(UserRegistrationState.name)  # set the state to collect the user's name
     await callback.message.answer("Type your name: ")
-
 
 
 # Handler for collecting the user's name, we are handle not command, but state!!
@@ -102,7 +100,6 @@ async def create_user_profile(state: FSMContext):
     await insert_user(user_id, first_name, last_name, role)
 
 
-# In future let's get data from database, bot now from data variable
 # Handler for viewing the user's profile (shows the stored data)
 @start_router.message(F.text == 'View user profile')
 async def cmd_view_profile(message: Message):
@@ -170,12 +167,3 @@ async def cmd_delete_profile(message: Message):
 
     await message.answer("Your profile has been deleted. Enter /start to run bot.")
 
-
-@start_router.message(F.text == 'Employee')
-async def cmd_employee(message: Message):
-    await message.answer("You have chosen Employee role!")
-
-
-@start_router.message(F.text == 'Employer')
-async def cmd_employer(message: Message):
-    await message.answer("You have chosen Employer role!")
