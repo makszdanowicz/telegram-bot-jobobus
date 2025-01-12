@@ -114,14 +114,19 @@ async def read_experience_level(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()  # remove the inline keyboard
     await state.set_state(ApplicationRegistrationState.specialization)
     global specializations
+    # List of specializations
     specializations = [
         "AI/ML", "Sys. Administrator", "Business Analysis", "Architecture", "Backend", "Data", "Design",
         "DevOps", "ERP", "Embedded", "Frontend", "Fullstack", "GameDev", "Mobile", "PM", "Security",
         "Support", "Testing", "Other"
     ]
-    specialization_list = "\n- ".join(specializations)
+
+    # Create a numbered list of specializations
+    specialization_list = "\n".join([f"{i + 1}. {specialization}" for i, specialization in enumerate(specializations)])
+
     await callback.message.answer(
-        f"Please select your specialization from the list below and type it in:\n- {specialization_list}")
+        f"Please select your specialization from the list below and type the number:\n{specialization_list}"
+    )
     await callback.answer()
 
 

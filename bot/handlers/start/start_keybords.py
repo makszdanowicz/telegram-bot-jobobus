@@ -19,7 +19,7 @@ main_keyboard = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='How bot works and FAQ')
-         ]
+        ]
     ],
     resize_keyboard=True,
     input_field_placeholder='Choose your role...'
@@ -45,7 +45,6 @@ role_chooser = InlineKeyboardMarkup(
     ]
 )
 
-
 # Reply keyboard for profile management options (View, Edit, Delete profile)
 profile_keyboard = ReplyKeyboardMarkup(
     keyboard=[
@@ -59,4 +58,13 @@ profile_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True,
     input_field_placeholder='Manage your profile...'
+)
+
+updated_parameter_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='first name', callback_data='first_name_button'),
+            InlineKeyboardButton(text='last name', callback_data='last_name_button')
+        ]
+    ]
 )

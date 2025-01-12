@@ -41,9 +41,16 @@ async def get_connection():
     global pool
     if pool is None:
         raise Exception("Pool is not initialized. Call create_pool() first.")
-    async with pool.acquire() as connection:
-        print("Connection is initialized!")
-        return connection
+    connection = await pool.acquire()  # await the coroutine to get the connection
+    print("Connection is initialized!")
+    return connection
+
+
+async def get_pool():
+    global pool
+    if pool is None:
+        raise Exception("Pool is not initialized. Call create_pool() first.")
+    return pool
 
 
 # Function to close the connection pool
@@ -52,6 +59,6 @@ async def close_connection():
     if pool:
         # Close the pool and wait for all connections to be properly closed
         pool.close()
-        await pool.wait_closed()
+        await pool.wait_closed()  # closing all open connections
     else:
         print("Pool was not initialized or already closed.")
