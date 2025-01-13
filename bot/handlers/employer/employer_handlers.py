@@ -314,8 +314,8 @@ async def read_new_first_name(message: Message, state: FSMContext):
                             reply_markup=kb.employer_menu_keyboard)
     await state.clear()
 
-@employer_router.message(F.text == '🗑️')
-async def cmd_delete_profile(message: Message):
+@employer_router.message(F.text == 'Delete employer')
+async def employer_delete_profile(message: Message):
     user_id = message.from_user.id
     await delete_employer(user_id)
     await delete_user(user_id)
