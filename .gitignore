@@ -129,8 +129,9 @@ cython_debug/
 .idea
 /bot/config/bot_config.json
 /backend/database/db_config.json
-
+/backend/database/db_config.env
 *.json
 
 /__pycache__
-
+*.env
+*db_config.env

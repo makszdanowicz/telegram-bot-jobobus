@@ -83,8 +83,8 @@ async def read_role(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'employer_button':
         await state.update_data(role='employer')
         await create_user_profile(state)  # getData from UserStateReg and add new Record to users db'
-        await state.set_state(EmployerRegistrationState.email)  # change to company name state
-        await callback.message.answer("Enter your email, for your contact bio, for example: example@example.com")
+        await state.set_state(EmployerRegistrationState.company)  # change to company name state
+        await callback.message.answer("Enter your company name:")
     # await callback.message()
     await callback.message.edit_reply_markup()  # remove the inline keyboard
 
