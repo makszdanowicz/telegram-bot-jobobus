@@ -8,8 +8,8 @@ import re
 from . import employer_keyboards as kb
 from .employer_states import EmployerRegistrationState, AddJobOfferState, UpdateEmployerData
 
-from backend.database.employer import *
-from backend.database import *
+from backend.database.employer import  insert_employer, change_employer_company_name, delete_employer, select_employer_by_id
+from backend.database import delete_user, update_user_first_name, update_user_last_name
 
 employer_router = Router()
 specializations = []

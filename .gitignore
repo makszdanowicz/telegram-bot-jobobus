@@ -133,3 +133,4 @@ cython_debug/
 
 /__pycache__
 *.env
+*db_config.env
