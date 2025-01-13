@@ -18,15 +18,28 @@ specializations = []
 
 def validate_string(s):
     """
-    Validates that a string contains only lowercase letters, spaces, and hyphens.
+    Validates a string based on the following rules:
+    - Contains only lowercase letters, spaces, and hyphens.
+    - Must include at least two letters (ignoring spaces and hyphens).
     
     Args:
         s (str): The input string to validate.
     
     Returns:
-        bool: True if valid, False otherwise.
+        bool: True if the string is valid, False otherwise.
     """
-    return bool(re.fullmatch(r'[a-z\s-]+', s))
+    # Check if the string contains only allowed characters
+    if not re.fullmatch(r'[a-z\s-]+', s):
+        return False
+    
+    # Remove spaces and hyphens to count letters
+    letters_only = s.replace(" ", "").replace("-", "")
+    
+    # Ensure the string contains at least two letters
+    if len(letters_only) < 2:
+        return False
+
+    return True
 
 @employer_router.message(EmployerRegistrationState.company)
 async def read_company_name(message: Message, state: FSMContext):
