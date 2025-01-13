@@ -3,6 +3,7 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+import re
 
 from . import employer_keyboards as kb
 from .employer_states import EmployerRegistrationState, AddJobOfferState, ViewEmployerOffers
@@ -12,7 +13,17 @@ specializations = []
 
 ### Registration Handlers
 
-
+def validate_string(s):
+    """
+    Validates that a string contains only lowercase letters, spaces, and hyphens.
+    
+    Args:
+        s (str): The input string to validate.
+    
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    return bool(re.fullmatch(r'[a-z\s-]+', s))
 
 @employer_router.message(EmployerRegistrationState.company)
 async def read_company_name(message: Message, state: FSMContext):
@@ -52,6 +63,10 @@ async def start_create_offer(message: Message, state: FSMContext):
 @employer_router.message(AddJobOfferState.country)
 async def add_country(message: Message, state: FSMContext):
     country = message.text
+    country = country.lower()
+    if not validate_string(country):
+        await message.answer('Use only english alphabet, spaces and "-"')
+        return       
     if len(country) < 2 or not country.isalnum() and len(country) > 60: # 56 is max for The United Kingdom of Great Britain and Northern Ireland 
         await message.answer("Invalid country name. Please enter a valid country.")
         return
@@ -62,6 +77,10 @@ async def add_country(message: Message, state: FSMContext):
 @employer_router.message(AddJobOfferState.city)
 async def add_city(message: Message, state: FSMContext):
     city = message.text
+    city = city.lower()
+    if not validate_string(city):
+        await message.answer('Use only english alphabet, spaces and "-"')
+        return
     if len(city) < 2 or not city.isalnum() and len(city) > 50: #  Most city names are under 50 characters.
         await message.answer("Invalid city name. Please enter a valid city.")
         return
@@ -126,10 +145,10 @@ async def add_description(message: Message, state: FSMContext):
         )
         return
     await state.update_data(description=description)
-    await message.answer("Enter the monthly salary in pln")
+    await message.answer("Enter the monthly salary in PLN")
     await state.set_state(AddJobOfferState.salary)
 @employer_router.message(AddJobOfferState.salary)
-async def validate_salary(message: Message, state: FSMContext):
+async def add_salary(message: Message, state: FSMContext):
     salary = message.text
     min_val = 0
     max_val = 2147483647 #max_int
@@ -150,13 +169,13 @@ async def validate_salary(message: Message, state: FSMContext):
     data = await state.get_data()
     await message.answer(
         "Job Offer Created Successfully!\n"
-        f"Country: {data['country']}\n"
-        f"City: {data['city']}\n"
+        f"Country: {data['country'].capitalize()}\n"
+        f"City: {data['city'].capitalize()}\n"
         f"Work Mode: {data['work_mode']}\n"
         f"Experience Level: {data['experience_level']}\n"
         f"Specialization: {data['specialization']}\n"
-        f"Description: {data['description']}"
-        f"Salary: {data['salary']}",
+        f"Description: {data['description']}\n"
+        f"Salary: {data['salary']} PLN",
 
         reply_markup=kb.job_offer_menu_keyboard
     )
