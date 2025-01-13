@@ -6,8 +6,8 @@ employer_menu_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='View employer profile'),
-            # KeyboardButton(text='Edit employer profile'),
-            # KeyboardButton(text='🗑️') #Delete employer profile
+            KeyboardButton(text='Edit employer profile'),
+            KeyboardButton(text='🗑️') #Delete employer profile
         ],
         [
             KeyboardButton(text='Offers menu')
@@ -69,6 +69,18 @@ experience_level_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(text='Expert', callback_data='expert_button')
+        ]
+    ]
+)
+
+change_data_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='First name', callback_data='change_name_button'),
+            InlineKeyboardButton(text='Last name', callback_data='change_last_name_button')
+        ],
+        [
+            InlineKeyboardButton(text='Company name', callback_data='change_company_name_button')
         ]
     ]
 )

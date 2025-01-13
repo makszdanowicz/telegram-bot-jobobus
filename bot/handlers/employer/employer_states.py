@@ -16,3 +16,8 @@ class AddJobOfferState(StatesGroup):
     specialization = State()
     description = State()
     salary = State()
+
+class UpdateEmployerData(StatesGroup):
+    change_employer_company_name = State()
+    change_employer_name = State()
+    change_employer_last_name = State()
