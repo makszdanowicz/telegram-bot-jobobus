@@ -132,4 +132,4 @@ cython_debug/
 *.json
 
 /__pycache__
-
+backend/database/db_config.env

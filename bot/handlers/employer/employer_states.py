@@ -2,7 +2,6 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class EmployerRegistrationState(StatesGroup):
-    email = State()
     company = State()
 
 class ViewEmployerOffers(StatesGroup):
@@ -16,3 +15,4 @@ class AddJobOfferState(StatesGroup):
     experience_level = State()
     specialization = State()
     description = State()
+    salary = State()

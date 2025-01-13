@@ -12,17 +12,7 @@ specializations = []
 
 ### Registration Handlers
 
-@employer_router.message(EmployerRegistrationState.email)
-async def read_email(message: Message, state: FSMContext):
-    email = message.text
-    if '@' not in email or '.' not in email or len(email) > 254:
-        await message.answer("Invalid email format. Please try again.")
-        return
 
-    await state.update_data(email=email)
-    # await message.answer(f"Your email: {email}")
-    await state.set_state(EmployerRegistrationState.company)
-    await message.answer("Enter your company name:")
 
 @employer_router.message(EmployerRegistrationState.company)
 async def read_company_name(message: Message, state: FSMContext):
@@ -35,8 +25,7 @@ async def read_company_name(message: Message, state: FSMContext):
     data = await state.get_data()
     await message.answer(
         f"Your profile has been created:\n"
-        f"Company Name: {data['company']}\n"
-        f"Email: {data['email']}",
+        f"Company Name: {data['company']}",
         reply_markup=kb.employer_menu_keyboard
     )
     await state.clear()
@@ -48,7 +37,6 @@ async def cmd_view_profile(message: Message):
     await message.answer(
         "Your profile:\n"
         "Company Name: Example Company\n"
-        "Email: example@example.com\n"
         "Active Job Offers: number from DB"
     )
 
@@ -128,7 +116,7 @@ async def add_specialization(message: Message, state: FSMContext):
     await state.set_state(AddJobOfferState.description)
 
 @employer_router.message(AddJobOfferState.description)
-async def finalize_job_offer(message: Message, state: FSMContext):
+async def add_description(message: Message, state: FSMContext):
     description = message.text
     # Verify the length of the description
     min_len = 10 #change to 100 for production
@@ -138,6 +126,26 @@ async def finalize_job_offer(message: Message, state: FSMContext):
         )
         return
     await state.update_data(description=description)
+    await message.answer("Enter the monthly salary in pln")
+    await state.set_state(AddJobOfferState.salary)
+@employer_router.message(AddJobOfferState.salary)
+async def validate_salary(message: Message, state: FSMContext):
+    salary = message.text
+    min_val = 0
+    max_val = 2147483647 #max_int
+
+    # Check if salary is a valid number
+    if not salary.isdigit():
+        await message.answer("Salary value is not a valid number.")
+        return
+    
+    salary = int(salary)
+
+    if salary < min_val or salary > max_val:
+        await message.answer("Salary value is out of range.")
+        return
+    await state.update_data(salary=salary)
+
 
     data = await state.get_data()
     await message.answer(
@@ -147,7 +155,9 @@ async def finalize_job_offer(message: Message, state: FSMContext):
         f"Work Mode: {data['work_mode']}\n"
         f"Experience Level: {data['experience_level']}\n"
         f"Specialization: {data['specialization']}\n"
-        f"Description: {data['description']}",
+        f"Description: {data['description']}"
+        f"Salary: {data['salary']}",
+
         reply_markup=kb.job_offer_menu_keyboard
     )
     await state.clear()
@@ -169,7 +179,8 @@ async def view_specific_offer(callback: CallbackQuery):
         "Work Mode: Full-Time\n"
         "Experience Level: Senior\n"
         "Specialization: Developer\n"
-        "Description: Example job description."
+        "Description: Example job description\n"
+        "Salary: Example salary"
     )
 
 @employer_router.message(F.text == 'Edit job offer')
