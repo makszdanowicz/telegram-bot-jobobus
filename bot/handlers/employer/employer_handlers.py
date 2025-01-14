@@ -33,6 +33,7 @@ async def read_company_name(message: Message, state: FSMContext):
     await message.answer(
         f"Your profile has been created:\n"
         f"Company Name: {data['company']}",
+        reply_markup = kb.employer_menu_keyboard
     )
     await state.set_state(AddJobOfferState.profile_menu)
 
