@@ -57,9 +57,9 @@ async def read_company_name(message: Message, state: FSMContext):
     await message.answer(
         f"Your profile has been created:\n"
         f"Company Name: {data['company']}",
-        reply_markup=kb.employer_menu_keyboard
     )
-    await state.clear()
+    await state.set_state(AddJobOfferState.profile_menu)
+
 
 ### Menu Handlers
 
@@ -105,7 +105,7 @@ async def add_country(message: Message, state: FSMContext):
     if not validate_string(country):
         await message.answer('Use only english alphabet, spaces and "-"')
         return       
-    if len(country) < 2 or not country.isalnum() and len(country) > 60: # 56 is max for The United Kingdom of Great Britain and Northern Ireland 
+    if not country.isalnum() and len(country) > 60: # 56 is max for The United Kingdom of Great Britain and Northern Ireland 
         await message.answer("Invalid country name. Please enter a valid country.")
         return
     await state.update_data(country=country)

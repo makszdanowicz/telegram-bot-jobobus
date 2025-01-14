@@ -7,8 +7,9 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.dictionary import *
 
 from . import start_keybords as kb
+from bot.handlers.employer import employer_keyboards as kb1
 from bot.handlers.employee import EmployeeRegistrationState
-from bot.handlers.employer import EmployerRegistrationState
+from bot.handlers.employer import EmployerRegistrationState, AddJobOfferState
 
 from backend.database.user_queries import insert_user, select_user_by_id, delete_user, update_user_first_name, \
     update_user_last_name
@@ -33,9 +34,38 @@ class UpdateUserDataState(StatesGroup):
 
 # Handler for /start command, sends a welcome message with profile creation options
 @start_router.message(CommandStart())
-async def cmd_start(message: Message):
-    await message.answer(start_text, reply_markup=kb.profile)
+async def cmd_start(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user_data = await select_user_by_id(user_id)
+    if not user_data:
+        # If user does not exist, ask them to register
+        await message.answer(
+            "You are not registered in the system. Please contact support or register through the provided link.",
+            reply_markup=kb.profile
+        )
+        return
 
+    # Check the user's role
+    user_role = user_data.get("role")
+    if user_role == "employer":
+        # Change state to Employer's workflow
+        
+        await message.answer(
+            "Welcome back, Employer!",
+            reply_markup=kb1.employer_menu_keyboard
+        )
+        await state.clear()
+
+    # elif user_role == "employee":
+    #     # Change state to Employee's workflow
+    #     await state.set_state(EmployeeStates.start)
+    #     await message.answer(
+    #         "Welcome back, Employee! You can now browse job offers.",
+    #         reply_markup=kb.employee_menu
+    #     )
+    else:
+        # Handle unknown roles
+        await message.answer("Your role is not recognized. Please contact support.")
 
 # Handler for /help command, sends a help message
 @start_router.message(Command('help'))
