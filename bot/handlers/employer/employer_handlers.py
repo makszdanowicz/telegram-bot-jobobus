@@ -3,43 +3,19 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-import re
 
 from . import employer_keyboards as kb
 from .employer_states import EmployerRegistrationState, AddJobOfferState, UpdateEmployerData
 
 from backend.database.employer import  insert_employer, change_employer_company_name, delete_employer, select_employer_by_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name
+from bot.utils import validate_string_for_tags
 
 employer_router = Router()
 specializations = []
 
 ### Registration Handlers
 
-def validate_string(s):
-    """
-    Validates a string based on the following rules:
-    - Contains only lowercase letters, spaces, and hyphens.
-    - Must include at least two letters (ignoring spaces and hyphens).
-    
-    Args:
-        s (str): The input string to validate.
-    
-    Returns:
-        bool: True if the string is valid, False otherwise.
-    """
-    # Check if the string contains only allowed characters
-    if not re.fullmatch(r'[a-z\s-]+', s):
-        return False
-    
-    # Remove spaces and hyphens to count letters
-    letters_only = s.replace(" ", "").replace("-", "")
-    
-    # Ensure the string contains at least two letters
-    if len(letters_only) < 2:
-        return False
-
-    return True
 
 @employer_router.message(EmployerRegistrationState.company)
 async def read_company_name(message: Message, state: FSMContext):
@@ -102,7 +78,7 @@ async def start_create_offer(message: Message, state: FSMContext):
 async def add_country(message: Message, state: FSMContext):
     country = message.text
     country = country.lower()
-    if not validate_string(country):
+    if not validate_string_for_tags(country):
         await message.answer('Use only english alphabet, spaces and "-"')
         return       
     if not country.isalnum() and len(country) > 60: # 56 is max for The United Kingdom of Great Britain and Northern Ireland 
@@ -116,7 +92,7 @@ async def add_country(message: Message, state: FSMContext):
 async def add_city(message: Message, state: FSMContext):
     city = message.text
     city = city.lower()
-    if not validate_string(city):
+    if not validate_string_for_tags(city):
         await message.answer('Use only english alphabet, spaces and "-"')
         return
     if len(city) < 2 or not city.isalnum() and len(city) > 50: #  Most city names are under 50 characters.
