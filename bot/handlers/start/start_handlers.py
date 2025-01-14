@@ -5,9 +5,11 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from bot.utils.dictionary import *
+from bot.utils import validate_string
 
 from . import start_keybords as kb
-from bot.handlers.employer import employer_keyboards as kb1
+from bot.handlers.employer import employer_keyboards as kb_employer
+from bot.handlers.employee import employee_keyboards as kb_employee
 from bot.handlers.employee import EmployeeRegistrationState
 from bot.handlers.employer import EmployerRegistrationState, AddJobOfferState
 
@@ -49,23 +51,24 @@ async def cmd_start(message: Message, state: FSMContext):
     user_role = user_data.get("role")
     if user_role == "employer":
         # Change state to Employer's workflow
-        
         await message.answer(
             "Welcome back, Employer!",
-            reply_markup=kb1.employer_menu_keyboard
+            reply_markup=kb_employer.employer_menu_keyboard
         )
         await state.clear()
 
-    # elif user_role == "employee":
-    #     # Change state to Employee's workflow
-    #     await state.set_state(EmployeeStates.start)
-    #     await message.answer(
-    #         "Welcome back, Employee! You can now browse job offers.",
-    #         reply_markup=kb.employee_menu
-    #     )
+    elif user_role == "employee":
+        # Change state to Employee's workflow
+        await message.answer(
+            "Welcome back, Employee!",
+            reply_markup=kb_employee.employee_menu_keyboard
+        )
+        await state.clear()
+
     else:
         # Handle unknown roles
         await message.answer("Your role is not recognized. Please contact support.")
+        await state.clear()
 
 # Handler for /help command, sends a help message
 @start_router.message(Command('help'))
@@ -87,18 +90,26 @@ async def cmd_create_profile(callback: CallbackQuery, state: FSMContext):
 # Handler for collecting the user's name, we are handle not command, but state!!
 @start_router.message(UserRegistrationState.name)
 async def read_name(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)  # store the name in the FSM context
-    data_name = await state.get_data()
-    await state.set_state(UserRegistrationState.surname)  # move to the next state (surname selection)
-    await message.answer(f"Nice to meet you {data_name['name']}! Type your surname:")
+    name = message.text.strip()
+    if not validate_string(name) or len(name) > 100:
+        await message.answer("Use only allowed symbols to enter the name.")
+        return
+    await state.update_data(name=name)
+    await state.set_state(UserRegistrationState.surname)
+    await message.answer(f"Nice to meet you {name}! Type your surname:")
+
 
 
 # Handler for collecting the user's surname
 @start_router.message(UserRegistrationState.surname)
 async def read_surname(message: Message, state: FSMContext):
-    await state.update_data(surname=message.text)
-    await state.set_state(UserRegistrationState.role)  # move to the next state (role selection)
-    await message.answer("Choose your role", reply_markup=kb.role_chooser)
+    surname = message.text.strip()
+    if not validate_string(surname) or len(surname) > 100:
+        await message.answer("Use only allowed symbols to enter the last name.")
+        return
+    await state.update_data(surname=surname)
+    await state.set_state(UserRegistrationState.role)
+    await message.answer("Choose your role:", reply_markup=kb.role_chooser)
 
 
 # Handler for role selection
