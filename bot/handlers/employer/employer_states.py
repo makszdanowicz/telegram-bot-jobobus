@@ -7,6 +7,7 @@ class EmployerRegistrationState(StatesGroup):
 class ViewEmployerOffers(StatesGroup):
     display_offers = State()
     choose_offer = State()
+    offers_menu = State()
 
 class AddJobOfferState(StatesGroup):
     country = State()
@@ -16,6 +17,8 @@ class AddJobOfferState(StatesGroup):
     specialization = State()
     description = State()
     salary = State()
+    profile_menu = State()
+
 
 class UpdateEmployerData(StatesGroup):
     change_employer_company_name = State()

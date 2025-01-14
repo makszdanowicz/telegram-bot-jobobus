@@ -84,7 +84,7 @@ class TestEmployerHandlers(unittest.IsolatedAsyncioTestCase):
         await add_country(message, state)
 
         # Assert that the message.answer was called with the correct response
-        message.answer.assert_called_once_with("Invalid country name. Please enter a valid country.")
+        message.answer.assert_called_once_with('Use only english alphabet, spaces and "-"')
         state.update_data.assert_not_called()
         state.set_state.assert_not_called()
 
