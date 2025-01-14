@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from . import employee_keyboards as kb
 from .employee_states import EmployeeRegistrationState, ApplicationRegistrationState, EmployeeUpdateDateState
+from bot.handlers.employer import validate_string
 
 from backend.database.employee import insert_employee, update_employee_email, delete_employee, select_employee_by_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name
@@ -150,14 +151,31 @@ async def cmd_create_application(message: Message, state: FSMContext):
 
 @employee_router.message(ApplicationRegistrationState.country)
 async def read_country(message: Message, state: FSMContext):
-    await state.update_data(country=message.text)
+    country = message.text
+    country = country.lower()
+    if not validate_string(country):
+        await message.answer('Use only english alphabet, spaces and "-"')
+        return
+    if not country.isalnum() and len(
+            country) > 60:  # 56 is max for The United Kingdom of Great Britain and Northern Ireland
+        await message.answer("Invalid country name. Please enter a valid country.")
+        return
+    await state.update_data(country=country)
     await state.set_state(ApplicationRegistrationState.city)
     await message.answer("Please enter the name of the city where you are searching for a job (for example Warsaw).")
 
 
 @employee_router.message(ApplicationRegistrationState.city)
 async def read_city(message: Message, state: FSMContext):
-    await state.update_data(city=message.text)
+    city = message.text
+    city = city.lower()
+    if not validate_string(city):
+        await message.answer('Use only english alphabet, spaces and "-"')
+        return
+    if len(city) < 2 or not city.isalnum() and len(city) > 50:  # Most city names are under 50 characters.
+        await message.answer("Invalid city name. Please enter a valid city.")
+        return
+    await state.update_data(city=city)
     await state.set_state(ApplicationRegistrationState.work_mode)
     await message.answer("What is your preferred work mode?", reply_markup=kb.work_mode_keyboard)
 
@@ -219,7 +237,17 @@ async def read_specialization(message: Message, state: FSMContext):
 
 @employee_router.message(ApplicationRegistrationState.description)
 async def read_description(message: Message, state: FSMContext):
-    await state.update_data(description=message.text)
+    description = message.text
+
+    # Verify the length of the description
+    min_len = 10  # change to 100 for production
+    if len(description) < min_len or len(description) > 1000:
+        await message.answer(
+            "The job description must be between 100 and 1000 characters. Please try again."
+        )
+        return
+
+    await state.update_data(description=description)
     data = state.get_data()
     await state.clear()
     await message.answer("You have been successfully created your application!",
