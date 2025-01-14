@@ -18,3 +18,10 @@ class EmployeeUpdateDateState(StatesGroup):
     first_name_to_update = State()
     last_name_to_update = State()
     email_to_update = State()
+
+
+class ApplicationIdState(StatesGroup):
+    application_id = State()
+    isView = State()
+    isEdit = State()
+    isDelete = State()

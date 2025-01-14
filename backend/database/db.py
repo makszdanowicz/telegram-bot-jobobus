@@ -62,3 +62,31 @@ async def close_connection():
         await pool.wait_closed()  # closing all open connections
     else:
         print("Pool was not initialized or already closed.")
+
+
+# Executes an SQL query and returns results based on the fetch_type.
+async def execute_query(query: str, arguments: tuple = (), fetch_type: str = "none"):
+    connection = None
+    try:
+        connection = await get_connection()
+        async with connection.cursor(aiomysql.DictCursor) as cursor:
+            await cursor.execute(query, arguments)
+            if fetch_type == "none":
+                # For INSERT, UPDATE, DELETE, no data is returned
+                return None
+            elif fetch_type == "one":
+                # For SELECT queries expecting a single record
+                return await cursor.fetchone()
+            elif fetch_type == "all":
+                # For SELECT queries expecting multiple records
+                return await cursor.fetchall()
+            else:
+                raise ValueError(f"Unknown fetch_type: {fetch_type}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return None
+    finally:
+        if connection:
+            global pool
+            await pool.release(connection)
+            print("Connection released back to the pool.")
