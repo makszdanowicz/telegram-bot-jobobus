@@ -73,3 +73,10 @@ parameters_to_update_keyboard = InlineKeyboardMarkup(
         ]
     ]
 )
+
+stop_searching_button = KeyboardButton(text='Stop searching')
+stop_searching_keyboard = ReplyKeyboardMarkup(
+    keyboard=[[stop_searching_button]]
+)
+
+
