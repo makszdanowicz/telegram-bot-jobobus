@@ -7,7 +7,8 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.dictionary import *
 
 from . import start_keybords as kb
-from bot.handlers.employer import employer_keyboards as kb1
+from bot.handlers.employer import employer_keyboards as kb_employer
+from bot.handlers.employee import employee_keyboards as kb_employee
 from bot.handlers.employee import EmployeeRegistrationState
 from bot.handlers.employer import EmployerRegistrationState, AddJobOfferState
 
@@ -49,20 +50,20 @@ async def cmd_start(message: Message, state: FSMContext):
     user_role = user_data.get("role")
     if user_role == "employer":
         # Change state to Employer's workflow
-        
         await message.answer(
             "Welcome back, Employer!",
-            reply_markup=kb1.employer_menu_keyboard
+            reply_markup=kb_employer.employer_menu_keyboard
         )
         await state.clear()
 
-    # elif user_role == "employee":
-    #     # Change state to Employee's workflow
-    #     await state.set_state(EmployeeStates.start)
-    #     await message.answer(
-    #         "Welcome back, Employee! You can now browse job offers.",
-    #         reply_markup=kb.employee_menu
-    #     )
+    elif user_role == "employee":
+        # Change state to Employee's workflow
+        await message.answer(
+            "Welcome back, Employee!",
+            reply_markup=kb_employee.employee_menu_keyboard
+        )
+        await state.clear()
+        
     else:
         # Handle unknown roles
         await message.answer("Your role is not recognized. Please contact support.")
