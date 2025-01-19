@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from . import employee_keyboards as kb
 from .employee_states import EmployeeRegistrationState, ApplicationRegistrationState, EmployeeUpdateDateState
-from bot.handlers.employer import validate_string
+from bot.utils import validate_string
 
 from backend.database.employee import insert_employee, update_employee_email, delete_employee, select_employee_by_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name

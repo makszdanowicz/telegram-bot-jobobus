@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from . import employee_keyboards as kb
 from .employee_states import ApplicationRegistrationState, ApplicationIdState
-from bot.handlers.employer import validate_string
+from bot.utils import validate_string
 
 from backend.database.employee import (insert_application, delete_application, select_all_specializations,
                                        select_all_applications_id_with_specialization, select_application_by_id)

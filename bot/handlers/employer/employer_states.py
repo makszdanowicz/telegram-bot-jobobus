@@ -24,3 +24,13 @@ class UpdateEmployerData(StatesGroup):
     change_employer_company_name = State()
     change_employer_name = State()
     change_employer_last_name = State()
+
+class UpdateJobOfferState(StatesGroup):
+    offer_id = State()
+    change_country = State()
+    change_city = State()
+    change_work_mode = State()
+    change_experience_level = State()
+    change_specialization = State()
+    change_description = State()
+    change_salary = State()
