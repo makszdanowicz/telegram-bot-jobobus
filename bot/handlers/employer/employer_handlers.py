@@ -58,8 +58,8 @@ async def cmd_view_profile(message: Message):
 
 # Change values
 
-@employer_router.callback_query(F.data == "change_company_name_button'")
-async def update_email(callback: CallbackQuery, state: FSMContext):
+@employer_router.callback_query(F.data == "change_company_name_button")
+async def update_company(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()  # remove the inline keyboard
     await callback.message.answer("Type your updated company name: ")
     await state.set_state(UpdateEmployerData.change_employer_company_name)
@@ -84,13 +84,13 @@ async def change_company_name(message: Message, state: FSMContext):
     )
 
 @employer_router.callback_query(F.data == "change_name_button")
-async def update_email(callback: CallbackQuery, state: FSMContext):
+async def update_name(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()  # remove the inline keyboard
     await callback.message.answer("Type your updated name: ")
     await state.set_state(UpdateEmployerData.change_employer_name)
 
 @employer_router.callback_query(F.data == "change_last_name_button")
-async def update_email(callback: CallbackQuery, state: FSMContext):
+async def update_last_name(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()  # remove the inline keyboard
     await callback.message.answer("Type your updated last name: ")
     await state.set_state(UpdateEmployerData.change_employer_last_name)
@@ -107,7 +107,7 @@ async def read_new_last_name(message: Message, state: FSMContext):
                             reply_markup=kb.employer_menu_keyboard)
     await state.clear()
 @employer_router.message(UpdateEmployerData.change_employer_name)
-async def read_new_first_name(message: Message, state: FSMContext):
+async def read_new_name(message: Message, state: FSMContext):
     await state.update_data(change_employer_name=message.text)
     user_id = message.from_user.id
     updated_data = await state.get_data()
