@@ -36,10 +36,8 @@ view_offers_menu_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='Edit job offer'),
             KeyboardButton(text='Delete job offer'),
-            KeyboardButton(text='View specific offer'),
         ],
         [
-            KeyboardButton(text='View list of all offers'),
             KeyboardButton(text='Offers menu')
         ]
     ]

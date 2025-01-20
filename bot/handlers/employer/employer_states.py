@@ -8,6 +8,8 @@ class ViewEmployerOffers(StatesGroup):
     display_offers = State()
     choose_offer = State()
     offers_menu = State()
+    manage_offer = State()
+    confirm_delete = State()
 
 class AddJobOfferState(StatesGroup):
     country = State()

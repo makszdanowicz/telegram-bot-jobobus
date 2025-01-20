@@ -14,55 +14,6 @@ from bot.utils import validate_string_for_tags
 job_offers_router = Router()
 specializations = []
 
-@job_offers_router.callback_query(F.data.startswith('view_offer_'))
-async def view_specific_offer(callback: CallbackQuery):
-    offer_id = int(callback.data.split('_')[-1])  # Extract offer_id
-    
-    # Fetch job offer details using the helper function
-    job_offer = await select_job_offer_by_id(offer_id)
-
-    # Handle case where the job offer is not found
-    if not job_offer:
-        await callback.message.answer("❌ Job offer not found.")
-        return
-
-    # Format and send the job offer details
-    await callback.message.answer(
-        f"**Job Offer Details**\n\n"
-        f"**ID:** {job_offer['offer_id']}\n"
-        f"**Posted by User ID:** {job_offer['user_id']}\n"
-        f"**Country:** {job_offer['country']}\n"
-        f"**City:** {job_offer['city']}\n"
-        f"**Work Mode:** {job_offer['work_mode']}\n"
-        f"**Experience Level:** {job_offer['experience_required']}\n"
-        f"**Specialization:** {job_offer['specialization_name']}\n"
-        f"**Description:** {job_offer['description']}\n"
-        f"**Salary:** {job_offer['salary']} USD/month\n"
-        f"**Created At:** {job_offer['created_at']:%Y-%m-%d %H:%M:%S}\n"
-    )
-
-
-@job_offers_router.message(F.text == 'Edit job offer')
-async def cmd_edit_offer(message: Message):
-    await message.answer("Feature to edit job offers coming soon!")
-
-@job_offers_router.message(F.text == 'Delete job offer')
-async def cmd_delete_offer(message: Message):
-    await message.answer("Feature to delete job offers coming soon!")
-
-# @job_offers_router.message(F.text == 'Add job offer')
-# async def cmd_delete_offer(message: Message):
-#     await message.answer("")
-
-@job_offers_router.message(F.text == 'View specific offer')
-async def specific_offer(message: Message):
-    await message.answer("Feature to display specific offers coming soon!")
-
-@job_offers_router.message(F.text == 'View list of all offers')
-async def offer_list(message: Message):
-    await message.answer("Feature to display the list of job offers coming soon!")
-    for i in range (1, 11):
-        await message.answer(f"Sample job offer number {i}")
 @job_offers_router.message(F.text == 'Profile menu')
 async def cmd_profile_menu(message: Message):
     await message.answer("You have returned to the profile menu.", reply_markup=kb.employer_menu_keyboard)
@@ -251,7 +202,10 @@ async def handle_selected_offer(message: Message, state: FSMContext):
         await message.answer("No job offer found with the given ID. Please try again.")
         return
 
-    # Display job offer details
+    # Save the selected offer ID in the state for further actions (edit/delete)
+    await state.update_data(offer_id=int(offer_id))
+
+    # Display job offer details with the imported keyboard
     await message.answer(
         f"Job Offer Details:\n\n"
         f"Job Offer ID: {offer_id}\n"
@@ -263,6 +217,55 @@ async def handle_selected_offer(message: Message, state: FSMContext):
         f"Description: {offer['description']}\n"
         f"Salary: {offer['salary'] or 'Not Specified'}\n"
         f"Posted At: {offer['created_at']}",
-        reply_markup=kb.view_offers_menu_keyboard 
+        reply_markup=kb.view_offers_menu_keyboard  
     )
-    await state.clear()
+    await state.set_state(ViewEmployerOffers.manage_offer)  # Set the next state
+
+
+@job_offers_router.message(ViewEmployerOffers.manage_offer)
+async def manage_job_offer(message: Message, state: FSMContext):
+    user_action = message.text
+    state_data = await state.get_data()
+    offer_id = state_data.get("offer_id")
+
+    if user_action == "Edit job offer":
+        await message.answer(f"You selected to edit job offer ID {offer_id}. (feature will be available in the future)",
+                            reply_markup=kb.job_offer_menu_keyboard)
+        # Here, you can set a new state and implement editing logic
+        await state.clear()
+
+    elif user_action == "Delete job offer":
+        # Confirm deletion before proceeding
+        await message.answer(
+            f"Are you sure you want to delete job offer ID {offer_id}?\nType 'yes' to confirm or 'no' to cancel."
+        )
+        await state.set_state(ViewEmployerOffers.confirm_delete)
+
+    elif user_action == "Offers menu":
+        await message.answer("Returning to the offers menu.")
+        # Here, implement logic to redirect to the main menu or list of offers
+        await state.clear()
+
+    else:
+        await message.answer("Invalid option. Please use the buttons to select an action.")
+
+
+@job_offers_router.message(ViewEmployerOffers.confirm_delete)
+async def confirm_delete_offer(message: Message, state: FSMContext):
+    user_confirmation = message.text.lower()
+    state_data = await state.get_data()
+    offer_id = state_data.get("offer_id")
+
+    if user_confirmation == "yes":
+        # Perform deletion logic
+        await delete_job_offer(offer_id)
+        await message.answer(f"Job offer ID {offer_id} has been successfully deleted.",
+                            reply_markup=kb.job_offer_menu_keyboard)
+        await state.clear()
+
+    elif user_confirmation == "no":
+        await message.answer("Deletion cancelled. Returning to the offers menu.")
+        await state.set_state(ViewEmployerOffers.manage_offer)
+
+    else:
+        await message.answer("Invalid response. Please type 'yes' to confirm or 'no' to cancel.")
