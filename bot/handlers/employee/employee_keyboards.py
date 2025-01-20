@@ -27,7 +27,7 @@ application_menu_keyboard = ReplyKeyboardMarkup(
             KeyboardButton(text='Delete application')
         ],
         [
-            KeyboardButton(text='Start searching'),
+            KeyboardButton(text='Job search menu'),
             KeyboardButton(text='Back to profile menu')
         ]
     ]
@@ -74,9 +74,24 @@ parameters_to_update_keyboard = InlineKeyboardMarkup(
     ]
 )
 
+start_searching_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Start search', callback_data='start_search_job')
+        ]
+    ]
+)
+
+like_dislike_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='👍', callback_data='like_button'),
+            InlineKeyboardButton(text='Skip', callback_data='dislike_button')
+        ]
+    ]
+)
+
 stop_searching_button = KeyboardButton(text='Stop searching')
 stop_searching_keyboard = ReplyKeyboardMarkup(
     keyboard=[[stop_searching_button]]
 )
-
-

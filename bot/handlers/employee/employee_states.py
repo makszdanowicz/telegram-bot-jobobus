@@ -25,3 +25,8 @@ class ApplicationIdState(StatesGroup):
     isView = State()
     isEdit = State()
     isDelete = State()
+    isSearch = State()
+
+
+class SearchingJobOfferState(StatesGroup):
+    active = State()

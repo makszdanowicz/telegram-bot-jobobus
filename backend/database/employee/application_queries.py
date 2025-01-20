@@ -16,6 +16,11 @@ async def select_all_specializations():
     return await execute_query(query, (), fetch_type="all")
 
 
+async def select_one_application_id(user_id: int):
+    query = "SELECT application_id FROM applications WHERE user_id = %s"
+    return await execute_query(query, (user_id,), fetch_type="one")
+
+
 async def select_all_applications_id_with_specialization(user_id: int):
     query = """
             SELECT a.application_id, s.specialization_name
@@ -23,7 +28,7 @@ async def select_all_applications_id_with_specialization(user_id: int):
             INNER JOIN specializations s ON a.specialization_id = s.specialization_id
             WHERE a.user_id = %s
         """
-    return await execute_query(query, (user_id,),fetch_type="all")
+    return await execute_query(query, (user_id,), fetch_type="all")
 
 
 async def select_application_by_id(application_id: int):
@@ -45,3 +50,7 @@ async def delete_application(application_id: int):
     query = "DELETE FROM applications WHERE application_id = %s"
     await execute_query(query, (application_id,), fetch_type="none")
 
+
+async def delete_applications_related_to_employee(user_id: int):
+    query = "DELETE FROM applications WHERE user_id = %s"
+    await execute_query(query, (user_id,), fetch_type="none")
