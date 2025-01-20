@@ -1,2 +1,2 @@
 from .employer_states import EmployerRegistrationState, AddJobOfferState
-from .employer_handlers import add_country, validate_string
+from .job_offers_handlers import add_country
