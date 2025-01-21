@@ -1,7 +1,5 @@
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
-from aiogram.filters import Command
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from backend.database.employer.job_offers_queries import delete_all_job_offers_by_user_id
@@ -12,7 +10,6 @@ from .employer_states import EmployerRegistrationState, AddJobOfferState, Update
 from backend.database.employee import delete_all_likes_by_employer_id
 from backend.database.employer import insert_employer, change_employer_company_name, delete_employer, select_employer_by_id, delete_all_notifications_by_user_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name
-from bot.utils import validate_string_for_tags
 
 employer_router = Router()
 
@@ -127,7 +124,7 @@ async def employer_delete_profile(message: Message):
     await delete_all_job_offers_by_user_id(user_id)
     await delete_employer(user_id)
     await delete_user(user_id)
-    await message.answer("Your profile has been deleted. Enter /start to create new one.")
+    await message.answer("Your profile has been deleted. Enter /start to create new one.", reply_markup=ReplyKeyboardRemove())
 
 @employer_router.message(F.text == 'Edit employer profile')
 async def cmd_edit_profile(message: Message):

@@ -1,0 +1,1 @@
+Ta część kodu jest wykonana na przedmiot Inżynieria Oprogramowania.

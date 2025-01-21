@@ -1,5 +1,4 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 
 employer_menu_keyboard = ReplyKeyboardMarkup(
@@ -7,7 +6,6 @@ employer_menu_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='View employer profile'),
             KeyboardButton(text='Edit employer profile'),
-            #Delete employer profile
         ],
         [
             KeyboardButton(text='Delete employer'),
