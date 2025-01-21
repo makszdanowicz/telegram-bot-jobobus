@@ -38,7 +38,7 @@ view_offers_menu_keyboard = ReplyKeyboardMarkup(
             KeyboardButton(text='Delete job offer'),
         ],
         [
-            KeyboardButton(text='Offers menu')
+            KeyboardButton(text='Back to offers menu')
         ]
     ]
 )
@@ -80,6 +80,18 @@ change_data_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(text='Company name', callback_data='change_company_name_button')
+        ]
+    ]
+)
+
+view_likes_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Like", callback_data="like_candidate"),
+            InlineKeyboardButton(text="Dislike", callback_data="dislike_candidate")
+        ],
+        [
+            InlineKeyboardButton(text="Back to Offer Menu", callback_data="back_to_offer_menu")
         ]
     ]
 )

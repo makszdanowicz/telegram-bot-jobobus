@@ -9,7 +9,8 @@ from backend.database.employer.job_offers_queries import delete_all_job_offers_b
 from . import employer_keyboards as kb
 from .employer_states import EmployerRegistrationState, AddJobOfferState, UpdateEmployerData
 
-from backend.database.employer import insert_employer, change_employer_company_name, delete_employer, select_employer_by_id, insert_job_offer
+from backend.database.employee import delete_all_likes_by_employer_id
+from backend.database.employer import insert_employer, change_employer_company_name, delete_employer, select_employer_by_id, delete_all_notifications_by_user_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name
 from bot.utils import validate_string_for_tags
 
@@ -121,6 +122,8 @@ async def read_new_name(message: Message, state: FSMContext):
 @employer_router.message(F.text == 'Delete employer')
 async def employer_delete_profile(message: Message):
     user_id = message.from_user.id
+    await delete_all_notifications_by_user_id(user_id)
+    await delete_all_likes_by_employer_id(user_id)
     await delete_all_job_offers_by_user_id(user_id)
     await delete_employer(user_id)
     await delete_user(user_id)
@@ -128,5 +131,5 @@ async def employer_delete_profile(message: Message):
 
 @employer_router.message(F.text == 'Edit employer profile')
 async def cmd_edit_profile(message: Message):
-    # Allow editing in case the user made a typo in their first or last name, email.
+    # Allow editing in case the user made a typo in their first or last name or company.
     await message.answer("What detail you want to change?", reply_markup=kb.change_data_keyboard)
