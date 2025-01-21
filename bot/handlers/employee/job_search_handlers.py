@@ -110,6 +110,7 @@ async def handle_like_dislike(callback: CallbackQuery, state: FSMContext):
 
         await insert_notification(receiver_id, like_id, message)
 
+    await callback.message.edit_reply_markup()  # remove the inline keyboard
     # Show the next job offer
     await send_next_job_offer(callback.message, state)
 
