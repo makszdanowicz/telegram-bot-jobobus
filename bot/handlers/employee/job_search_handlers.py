@@ -106,7 +106,6 @@ async def handle_like_dislike(callback: CallbackQuery, state: FSMContext):
         like_id = like_id_from_db['like_id']
 
         message = await generate_message_for_notification(application_id)
-        await callback.message.answer(text=message)
 
         await insert_notification(receiver_id, like_id, message)
 
