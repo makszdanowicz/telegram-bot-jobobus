@@ -21,7 +21,6 @@ class AddJobOfferState(StatesGroup):
     salary = State()
     profile_menu = State()
 
-
 class UpdateEmployerData(StatesGroup):
     change_employer_company_name = State()
     change_employer_name = State()
@@ -36,3 +35,7 @@ class UpdateJobOfferState(StatesGroup):
     change_specialization = State()
     change_description = State()
     change_salary = State()
+
+class SearchForCandidate(StatesGroup):
+    searching_menu = State()
+    likes = State()

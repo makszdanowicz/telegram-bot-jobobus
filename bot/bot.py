@@ -10,6 +10,7 @@ from bot.handlers.employee.application_handlers import application_router
 from bot.handlers.employee.job_search_handlers import searching_job_router
 from bot.handlers.employer.employer_handlers import employer_router
 from bot.handlers.employer.job_offers_handlers import job_offers_router
+from bot.handlers.employer.candidates_handlers import candidates_router
 
 # Reading API token for bot from .env config file
 load_dotenv()
@@ -27,3 +28,4 @@ dp.include_router(application_router)
 dp.include_router(searching_job_router)
 dp.include_router(employer_router)
 dp.include_router(job_offers_router)
+dp.include_router(candidates_router)
