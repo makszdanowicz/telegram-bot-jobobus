@@ -7,8 +7,8 @@ from aiogram.fsm.context import FSMContext
 from . import employee_keyboards as kb
 from .employee_states import EmployeeRegistrationState, ApplicationRegistrationState, EmployeeUpdateDateState
 from bot.utils import validate_string_for_tags
-
-from backend.database.employee import delete_applications_related_to_employee
+from backend.database.employer import delete_all_notifications_by_employee_id
+from backend.database.employee import delete_applications_related_to_employee, delete_all_likes_by_employee_id
 from backend.database.employee import insert_employee, update_employee_email, delete_employee, select_employee_by_id
 from backend.database import delete_user, update_user_first_name, update_user_last_name
 
@@ -130,6 +130,8 @@ async def read_new_email(message: Message, state: FSMContext):
 @employee_router.message(F.text == '🗑️')
 async def cmd_delete_profile(message: Message):
     user_id = message.from_user.id
+    await delete_all_notifications_by_employee_id(user_id)
+    await delete_all_likes_by_employee_id(user_id)
     await delete_applications_related_to_employee(user_id)
     await delete_employee(user_id)
     await delete_user(user_id)

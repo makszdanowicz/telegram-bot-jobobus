@@ -183,6 +183,7 @@ async def cmd_view_offers(message: Message, state: FSMContext):
     await message.answer(
         f"Your job offers:\n\n{offer_list}\n\n"
         f"Enter the ID of the job offer you want to view:",
+        reply_markup=ReplyKeyboardRemove()
     )
     # Set state to expect a specific job offer ID
     await state.set_state(ViewEmployerOffers.choose_offer)
@@ -240,12 +241,13 @@ async def manage_job_offer(message: Message, state: FSMContext):
             f"Are you sure you want to delete job offer ID {offer_id}?\nType 'yes' to confirm or 'no' to cancel."
         )
         await state.set_state(ViewEmployerOffers.confirm_delete)
+        return
 
-    elif user_action == "Offers menu":
-        await message.answer("Returning to the offers menu.")
-        # Here, implement logic to redirect to the main menu or list of offers
+    elif user_action == "Back to offers menu":
+        await message.answer("Returning to the offers menu.",
+                            reply_markup=kb.job_offer_menu_keyboard)
         await state.clear()
-
+        return
     else:
         await message.answer("Invalid option. Please use the buttons to select an action.")
 
@@ -255,7 +257,7 @@ async def confirm_delete_offer(message: Message, state: FSMContext):
     user_confirmation = message.text.lower()
     state_data = await state.get_data()
     offer_id = state_data.get("offer_id")
-
+    
     if user_confirmation == "yes":
         # Perform deletion logic
         await delete_job_offer(offer_id)
