@@ -36,6 +36,5 @@ class UpdateJobOfferState(StatesGroup):
     change_description = State()
     change_salary = State()
 
-class SearchForCandidate(StatesGroup):
-    searching_menu = State()
-    likes = State()
+class CandidateReview(StatesGroup):
+    reviewing = State()

@@ -1,72 +1,96 @@
 from aiogram import F, Router
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
-from .employer_states import SearchForCandidate
+from .employer_states import CandidateReview
 from . import employer_keyboards as kb
-from backend.database.employer import (count_unread_likes_for_employer, select_oldest_unread_likes_for_employer,
-    change_notification_status, select_candidate_email_by_notification_id, delete_notification)
+from backend.database.employer import (
+    count_unread_likes_for_employer, 
+    select_oldest_unread_likes_for_employer,
+    change_notification_status, 
+    select_candidate_email_by_notification_id, 
+    delete_notification
+)
 from backend.database.employee import delete_like
+
 candidates_router = Router()
 
 @candidates_router.message(F.text == "Start searching for a candidate")
 async def cmd_start_candidates_review(message: Message, state: FSMContext):
-
     user_id = message.from_user.id
-    likes_num = await count_unread_likes_for_employer(user_id)
-    likes_num = int(likes_num) if likes_num else 0
+    await message.answer("🔍 Searching for candidates...")
 
-    if likes_num != 0:
-        await message.answer(f"You job offers were liked {likes_num} times!")
-        await state.set_state(SearchForCandidate.searching_menu)
+    try:
+        likes_num_dict = await count_unread_likes_for_employer(user_id)
+        likes_num = likes_num_dict.get('read_notification_count', 0)
+        likes_num = int(likes_num) if likes_num else 0
 
-    elif likes_num == 0:
-        await message.answer(f"It seems that no one liked your offers yet",
-                                    reply_markup = kb.job_offer_menu_keyboard)
-        await state.clear()
+        if likes_num > 0:
+            await message.answer(f"You have {likes_num} new like(s) on your job offers!")
+            candidates = await select_oldest_unread_likes_for_employer(user_id)
 
-    else:
-        await message.answer(f"Error occurred while reading likes number",
-                                    reply_markup = kb.job_offer_menu_keyboard)
-        await state.clear()
-
-@candidates_router.message(SearchForCandidate.searching_menu)
-async def cmd_handle_candidates_likes_menu(message: Message, callback: CallbackQuery, state: FSMContext):
-    await message.answer("You are in the search menu.")
-    
-    user_id = message.from_user.id
-    
-    candidates = await select_oldest_unread_likes_for_employer(user_id)
-    
-    # Iterate through candidate applications
-    for candidate in candidates:
-        candidate_message = candidate["message"]
-        
-        await message.answer(candidate_message, reply_markup=kb.view_likes_menu)
-        
-        # Handle user actions with the inline keyboard
-        @candidates_router.callback_query(lambda cb: cb.data in ["like_candidate", "dislike_candidate", "back_to_offer_menu"])
-        async def handle_candidate_action(callback_query: CallbackQuery):
-            action = callback.data
-            
-            if action == "like_candidate":
-                # Mark the notification as "read"
-                await change_notification_status(candidate["notification_id"])
-
-                # Retrieve the candidate's email
-                candidate_email = await select_candidate_email_by_notification_id(candidate["notification_id"])
-                await callback_query.message.answer(f"Candidate liked! Email: {candidate_email}")
-            
-            elif action == "dislike_candidate":
-                await delete_like(candidate["like_id"])
-                await delete_notification(candidate["notification_id"])
-                await callback_query.message.answer("Candidate disliked and record removed.")
-            
-            elif action == "back_to_offer_menu":
-                # Clear the state and display the job offer menu
+            if candidates:
+                await state.update_data(candidates=candidates)
+                await state.set_state(CandidateReview.reviewing)
+                await process_candidate(message, state)
+            else:
+                await message.answer("No candidates found.", reply_markup=kb.job_offer_menu_keyboard)
                 await state.clear()
-                await callback_query.message.answer("Returning to the offers menu...", reply_markup=kb.job_offer_menu_keyboard)
-            
-            await callback_query.answer()
+        else:
+            await message.answer("No one has liked your offers yet.", reply_markup=kb.job_offer_menu_keyboard)
+            await state.clear()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        await message.answer("An error occurred while processing likes.", reply_markup=kb.job_offer_menu_keyboard)
+        await state.clear()
+
+async def process_candidate(message: Message, state: FSMContext):
+    data = await state.get_data()
+    candidates = data.get("candidates", [])
+
+    if not candidates:
+        await message.answer("All candidates have been reviewed.", reply_markup=kb.job_offer_menu_keyboard)
+        await state.clear()
+        return
+
+    candidate = candidates.pop(0)  # Get the first candidate and remove it from the list
+    await state.update_data(candidates=candidates, current_candidate=candidate)
+
+    candidate_message = candidate.get('message', 'No details available.')
+    
+    await message.answer(candidate_message, reply_markup=kb.view_likes_menu)
+
+@candidates_router.callback_query(F.data == "like_candidate")
+async def handle_like_candidate(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    candidate = data.get("current_candidate")
+
+    if candidate:
+        await change_notification_status(candidate["notification_id"])
+        candidate_email = await select_candidate_email_by_notification_id(candidate["notification_id"])
+        await callback.message.answer(f"Candidate liked! Email: {candidate_email['email']}")
+
+    await process_candidate(callback.message, state)
+    await callback.answer()
+
+@candidates_router.callback_query(F.data == "dislike_candidate")
+async def handle_dislike_candidate(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    candidate = data.get("current_candidate")
+
+    if candidate:
+        await delete_like(candidate["notification_id"])
+        await delete_notification(candidate["notification_id"])
+        await callback.message.answer("Candidate disliked and record removed.")
+
+    await process_candidate(callback.message, state)
+    await callback.answer()
+
+@candidates_router.callback_query(F.data == "back_to_offer_menu")
+async def handle_back_to_offer_menu(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback.message.answer("Returning to the offers menu...", reply_markup=kb.job_offer_menu_keyboard)
+    await callback.answer()

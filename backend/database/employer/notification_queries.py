@@ -6,31 +6,26 @@ async def insert_notification(user_id: int, like_id: int, message: str):
 
 async def count_unread_likes_for_employer(user_id: int):
     query = """
-        SELECT 
-            COUNT(n.notification_id) AS unread_like_count
-        FROM 
-            job_offers jo
-        INNER JOIN 
-            likes l ON jo.offer_id = l.offer_id
-        INNER JOIN 
-            notifications n ON l.like_id = n.like_id
-        WHERE 
-            jo.user_id = %s
-            AND n.status = 'unread'
+    SELECT COUNT(n.notification_id) AS read_notification_count
+    FROM employers e
+    INNER JOIN notifications n ON e.user_id = n.user_id
+    WHERE e.user_id = %s AND n.status = 'unread';
     """
-    await execute_query(query, (user_id,), fetch_type="one")
+    result = await execute_query(query, (user_id,), fetch_type="one")
+    print(result)
+    return result
     
 
 async def select_oldest_unread_likes_for_employer(user_id: int):
     query = """
-    SELECT n.notification_id, n.message, n.created_at
-    FROM notifications n
-    JOIN likes l ON n.like_id = l.like_id
-    JOIN job_offers jo ON l.offer_id = jo.offer_id
-    WHERE jo.user_id = %s AND n.status = 'unread'
+    SELECT n.notification_id, n.message, n.created_at FROM notifications as n
+    INNER JOIN likes as l ON n.like_id = l.like_id
+    INNER JOIN job_offers as jo ON jo.offer_id = l.offer_id
+    WHERE n.user_id = %s AND n.status = "unread"
+    AND jo.offer_id = l.offer_id
     ORDER BY n.created_at ASC;
     """
-    await execute_query(query, (user_id,), fetch_type="all")
+    return await execute_query(query, (user_id,), fetch_type="all")
 
 async def change_notification_status(notification_id: int):
     query = """
@@ -49,7 +44,7 @@ async def select_candidate_email_by_notification_id(notification_id: int):
     JOIN employees e ON a.user_id = e.user_id
     WHERE n.notification_id = %s;
     """
-    await execute_query(query, (notification_id,), fetch_type="one")
+    return await execute_query(query, (notification_id,), fetch_type="one")
 
 async def delete_notification(notification_id: int):
     query = """
