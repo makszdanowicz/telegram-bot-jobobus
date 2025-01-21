@@ -231,13 +231,13 @@ async def read_application_id(message: Message, state: FSMContext):
             f"Application ID: {application_id}\n"
             f"First Name: {application_from_db['first_name']}\n"
             f"Last Name: {application_from_db['last_name']}\n"
-            f"Email: {application_from_db['email']}\n"
-            f"Country: {application_from_db['country']}\n"
-            f"City: {application_from_db['city']}\n"
-            f"Work Mode: {application_from_db['work_mode']}\n"
-            f"Experience Level: {application_from_db['experience_level']}\n"
-            f"Specialization: {application_from_db['specialization_name']}\n"
-            f"Description: {application_from_db['description']}"
+            f"📧Email: {application_from_db['email']}\n"
+            f"🌍Country: {application_from_db['country']}\n"
+            f"🏙️City: {application_from_db['city']}\n"
+            f"🖥️Work Mode: {application_from_db['work_mode']}\n"
+            f"📈Experience Level: {application_from_db['experience_level']}\n"
+            f"🛠️Specialization: {application_from_db['specialization_name']}\n"
+            f"📄Description: {application_from_db['description']}"
         )
         await message.answer(text=application_details)
         return

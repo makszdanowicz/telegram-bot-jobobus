@@ -6,6 +6,7 @@ from .employee_states import SearchingJobOfferState
 from . import employee_keyboards as kb
 
 from backend.database.employee import insert_like, select_like_id, select_application_by_id
+from backend.database.employer import select_user_id_by_offer_id, insert_notification, select_matching_job_offers
 
 searching_job_router = Router()
 
@@ -19,14 +20,13 @@ async def match_job_offers(callback_query: CallbackQuery, state: FSMContext):
 
     # Notify the user that the search has started
     await callback_query.message.answer(
-        f"🔎Start looking for job offers for your application with ID {application_id}.\n"
+        f"🔎Start looking for job offers for your application with ID {application_id}\n"
         f"If you want to stop searching, click the 'Stop Searching' button in the menu.",
         reply_markup=kb.stop_searching_keyboard)
-    await callback_query.message.answer("Some job...")
 
     # Fetch matching job offers from the database
-    job_offers = None
-    #job_offers = await select_matching_job_offers(application_id)
+    # job_offers = None
+    job_offers = await select_matching_job_offers(application_id)
 
     # If no matching offers are found, notify the user
     if not job_offers:
@@ -65,12 +65,12 @@ async def send_next_job_offer(message: Message, state: FSMContext):
 
     current_offer = job_offers[current_offer_index]
     job_text = (
-        f"💼 **Job Offer Details:**\n"
-        f"📌 **Position:** {current_offer['position']}\n"
-        f"🏢 **Company:** {current_offer['company']}\n"
-        f"🌍 **Location:** {current_offer['location']}\n"
-        f"💰 **Salary:** {current_offer['salary']}\n\n"
-        f"📄 **Description:**\n{current_offer['description']}"
+        f"💼 Job Offer Details:\n"
+        f"📌 Position: {current_offer['specialization_name']}\n"
+        f"🏢 Company: {current_offer['company_name']}\n"
+        f"🌍 Location:\n country: {current_offer['country']}\n city: {current_offer['city']}\n"
+        f"💰 Salary: {current_offer['salary']} PLN\n\n"
+        f"📄 Description:\n{current_offer['description']}"
     )
     await message.answer(text=job_text, reply_markup=kb.like_dislike_keyboard)  # Send the job offer to the user
     await state.update_data(current_offer_index=current_offer_index + 1)  # actualize index of next job offer
@@ -95,18 +95,22 @@ async def handle_like_dislike(callback: CallbackQuery, state: FSMContext):
         return
 
     if callback.data == 'like_button':
-        # await insert_like(application_id, offer_id)
+        # Generate like record to db
+        await insert_like(application_id, offer_id)
 
-        # Generate a notification message
-        # receiver_id = await get_receiver_id(offer_id)
-        # SELECT user_id from job_offers WHERE offer_id = %s
+        # Generate a notification message to employer
+        receiver_id_from_db = await select_user_id_by_offer_id(offer_id)
+        receiver_id = receiver_id_from_db['user_id']
 
-        like_id = await select_like_id(application_id, offer_id)
+        like_id_from_db = await select_like_id(application_id, offer_id)
+        like_id = like_id_from_db['like_id']
 
         message = await generate_message_for_notification(application_id)
+        await callback.message.answer(text=message)
 
-        # await insert_notification(receiver_id, like_id, message)
+        await insert_notification(receiver_id, like_id, message)
 
+    await callback.message.edit_reply_markup()  # remove the inline keyboard
     # Show the next job offer
     await send_next_job_offer(callback.message, state)
 
