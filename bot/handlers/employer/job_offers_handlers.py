@@ -1,14 +1,12 @@
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
-from aiogram.filters import Command
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from . import employer_keyboards as kb
-from .employer_states import EmployerRegistrationState, AddJobOfferState, UpdateEmployerData, ViewEmployerOffers
+from .employer_states import AddJobOfferState, ViewEmployerOffers
 
-from backend.database.employer import (insert_job_offer, select_job_offer_by_id, update_job_offer_description,
-delete_job_offer, select_all_job_offers, select_all_specializations, select_job_offer_by_user_id)
+from backend.database.employer import (insert_job_offer, select_job_offer_by_id,
+delete_job_offer, select_all_specializations, select_job_offer_by_user_id)
 from bot.utils import validate_string_for_tags
 
 job_offers_router = Router()
